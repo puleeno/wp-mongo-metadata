@@ -1,0 +1,17 @@
+{
+    "name": "puleeno/wp-mongo-metadata",
+    "autoload": {
+        "psr-4": {
+            "Puleeno\\WpMongo\\Metadata\\": "src/"
+        }
+    },
+    "license": "GPL-3.0",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Puleeno Nguyen",
+            "email": "puleeno@gmail.com"
+        }
+    ],
+    "require": {}
+}
