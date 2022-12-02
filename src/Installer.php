@@ -3,13 +3,26 @@ namespace Puleeno\WpMongo\Metadata;
 
 class Installer
 {
-    public static function active()
+    protected static function createObjectIdForPostsTable()
     {
-        $db = MongoDB::getInstance()->getDatabase();
+        global $wpdb;
+        if (!get_option('wp_mongo_metadata_create_object_key', false)) {
+            $sql = "ALTER TABLE `{$wpdb->prefix}posts` ADD `meta_object_id` VARCHAR(32) NULL AFTER `ID`;";
+            $wpdb->query($sql);
 
+            $sql= "ALTER TABLE `{$wpdb->prefix}posts` ADD UNIQUE `post_meta_object_id` (`meta_object_id`(32));";
+            $wpdb->query($sql);
+
+            // Update flag to skip update table posts.
+            update_option('wp_mongo_metadata_create_object_key', true);
+        }
+    }
+
+    protected static function createMongoDbCollections()
+    {
+        $db          = MongoDB::getInstance()->getDatabase();
         $collections = iterator_to_array($db->listCollectionNames());
 
-        // Create collections
         if (array_search('postmetas', $collections, true) === false) {
             $db->createCollection('postmetas');
         }
@@ -19,5 +32,17 @@ class Installer
         if (array_search('termmetas', $collections, true) === false) {
             $db->createCollection('termmetas');
         }
+    }
+
+    public static function active()
+    {
+        static::createObjectIdForPostsTable();
+
+        // Create Mongo collections
+        static::createMongoDbCollections();
+    }
+
+    public static function deactive()
+    {
     }
 }
