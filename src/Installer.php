@@ -34,12 +34,20 @@ class Installer
         }
     }
 
+    protected static function setupBatchRunner()
+    {
+    }
+
     public static function active()
     {
+        // Update WordPress DB
         static::createObjectIdForPostsTable();
 
         // Create Mongo collections
         static::createMongoDbCollections();
+
+        // Init batch runner
+        static::setupBatchRunner();
     }
 
     public static function deactive()

@@ -2,6 +2,7 @@
 namespace Puleeno\WpMongo\Metadata;
 
 use MongoDB\Client;
+use MongoDB\BSON\ObjectId;
 
 class MongoDB
 {
@@ -46,6 +47,9 @@ class MongoDB
         $this->mongoDBClient = new Client($connectString);
     }
 
+    /**
+     * @return self
+     */
     public static function getInstance()
     {
         if (is_null(static::$instance)) {
@@ -77,5 +81,20 @@ class MongoDB
 
         $dbname = $this->dbname;
         return $client->$dbname;
+    }
+
+    /**
+     * @return object
+     */
+    public static function get_post_meta($meta_object_id, $defaultValue)
+    {
+        if (empty($meta_object_id)) {
+            return $defaultValue;
+        }
+        $database = static::getInstance()->getDatabase();
+
+        return $database->postmetas->findOne([
+            '_id' => new ObjectId($meta_object_id),
+        ]);
     }
 }
